@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "bw-fokus-log/planner",
+	"title": "Fokus-Log",
+	"category": "widgets",
+	"icon": "clock",
+	"description": "The Fokus-Log day planner with timer, breaks and history.",
+	"textdomain": "bw-fokus-log",
+	"supports": {
+		"autoRegister": true,
+		"html": false,
+		"multiple": false
+	}
+}
