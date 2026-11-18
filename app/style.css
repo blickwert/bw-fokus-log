@@ -1,0 +1,840 @@
+/*
+ * Fokus-Log app styles. Everything lives inside .bwfl-app so the WordPress
+ * admin and the theme stay untouched. Colours are variables: a theme can
+ * override them, for example through theme.json (settings.custom.bw-fokus-log).
+ * Only system fonts are used (no requests to font servers).
+ */
+.bwfl-app {
+	--bwfl-accent: var(--wp--custom--bw-fokus-log--accent, #0f766e);
+	--bwfl-accent-soft: #eef7f5;
+	--bwfl-bg: #f2f4f6;
+	--bwfl-card: #ffffff;
+	--bwfl-line: #dde2e7;
+	--bwfl-line-soft: #e3e8ec;
+	--bwfl-ink: #15202b;
+	--bwfl-ink-2: #45515c;
+	--bwfl-ink-3: #5b6670;
+	--bwfl-warm: #9a3412;
+	--bwfl-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--bwfl-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+	font-family: var(--bwfl-font);
+	font-size: 15px;
+	line-height: 1.4;
+	color: var(--bwfl-ink);
+	background: var(--bwfl-bg);
+	padding: 32px 24px 64px;
+	box-sizing: border-box;
+}
+
+.bwfl-app *,
+.bwfl-app *::before,
+.bwfl-app *::after {
+	box-sizing: border-box;
+}
+
+.bwfl-app h1,
+.bwfl-app h2,
+.bwfl-app p {
+	margin: 0;
+	padding: 0;
+	color: inherit;
+}
+
+.bwfl-app button,
+.bwfl-app input,
+.bwfl-app textarea {
+	font-family: inherit;
+}
+
+.bwfl-app button:focus-visible,
+.bwfl-app input:focus-visible,
+.bwfl-app textarea:focus-visible,
+.bwfl-app summary:focus-visible {
+	outline: 2px solid #1d4ed8;
+	outline-offset: 2px;
+}
+
+.bwfl-shell {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+/* ---------- header ---------- */
+
+.bwfl-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.bwfl-head-text {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.bwfl-kicker {
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--bwfl-ink-3);
+}
+
+.bwfl-app .bwfl-title {
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.bwfl-sub {
+	font-size: 15px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-tabs {
+	display: flex;
+	gap: 4px;
+	background: var(--bwfl-card);
+	border: 1px solid var(--bwfl-line);
+	border-radius: 12px;
+	padding: 4px;
+}
+
+.bwfl-tabs button {
+	min-height: 44px;
+	padding: 0 20px;
+	border: 0;
+	border-radius: 9px;
+	font-size: 15px;
+	font-weight: 600;
+	cursor: pointer;
+	background: transparent;
+	color: #3a4651;
+}
+
+.bwfl-tabs button[aria-pressed="true"] {
+	background: var(--bwfl-ink);
+	color: #fff;
+}
+
+/* ---------- layout & cards ---------- */
+
+.bwfl-grid {
+	container-type: inline-size;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+	align-items: flex-start;
+}
+
+.bwfl-main {
+	flex: 999 1 560px;
+	min-width: 0;
+}
+
+.bwfl-side {
+	flex: 1 1 360px;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.bwfl-stack {
+	container-type: inline-size;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.bwfl-card {
+	background: var(--bwfl-card);
+	border: 1px solid var(--bwfl-line);
+	border-radius: 16px;
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.bwfl-card h2 {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.bwfl-main h2,
+#bwfl-chart-h {
+	font-size: 22px;
+}
+
+.bwfl-card-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.bwfl-hint,
+.bwfl-note {
+	font-size: 13px;
+	color: var(--bwfl-ink-3);
+}
+
+.bwfl-loading,
+.bwfl-error {
+	padding: 16px;
+	font-size: 15px;
+}
+
+.bwfl-error {
+	background: #fdf3e7;
+	border: 1px solid #f0d2ae;
+	border-radius: 12px;
+	color: #7c3a0a;
+}
+
+/* ---------- buttons & fields ---------- */
+
+.bwfl-btn {
+	min-height: 44px;
+	padding: 0 16px;
+	border: 1px solid #c5cdd5;
+	border-radius: 10px;
+	background: #fff;
+	color: var(--bwfl-ink);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.bwfl-btn:hover {
+	background: #f6f8f9;
+}
+
+.bwfl-btn-primary {
+	min-height: 48px;
+	padding: 0 20px;
+	border: 0;
+	background: var(--bwfl-accent);
+	color: #fff;
+	font-size: 15px;
+}
+
+.bwfl-btn-primary:hover {
+	background: var(--bwfl-accent);
+	filter: brightness(0.92);
+}
+
+.bwfl-btn-warm {
+	border: 0;
+	background: var(--bwfl-warm);
+	color: #fff;
+}
+
+.bwfl-btn-warm:hover {
+	background: var(--bwfl-warm);
+	filter: brightness(0.92);
+}
+
+.bwfl-btn-ghost {
+	min-height: 40px;
+	padding: 0 14px;
+	border-color: var(--bwfl-ink-3);
+	background: transparent;
+	color: #fff;
+	font-size: 13px;
+}
+
+.bwfl-btn-ghost:hover {
+	background: rgb(255 255 255 / 10%);
+}
+
+.bwfl-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.bwfl-edit {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.bwfl-edit label {
+	font-size: 14px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-edit textarea,
+.bwfl-coach-settings textarea,
+.bwfl-coach-settings input {
+	width: 100%;
+	padding: 14px;
+	border: 1px solid #c5cdd5;
+	border-radius: 10px;
+	background: #fafbfc;
+	color: var(--bwfl-ink);
+	font: 400 14px/1.6 var(--bwfl-mono);
+	resize: vertical;
+}
+
+/* ---------- progress, break ---------- */
+
+.bwfl-progress {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.bwfl-progress-row {
+	display: flex;
+	justify-content: space-between;
+	font-size: 14px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-bar {
+	height: 8px;
+	border-radius: 99px;
+	background: var(--bwfl-line-soft);
+	overflow: hidden;
+}
+
+.bwfl-bar > div {
+	height: 100%;
+	background: var(--bwfl-accent);
+	border-radius: 99px;
+	transition: width 0.3s;
+}
+
+.bwfl-break {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 16px 18px;
+	border-radius: 12px;
+	background: #fdf3e7;
+	border: 1px solid #f0d2ae;
+}
+
+.bwfl-break-title {
+	font-weight: 600;
+	color: #7c3a0a;
+}
+
+.bwfl-break-next {
+	font-size: 14px;
+	color: #5c3410;
+}
+
+.bwfl-break-right {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.bwfl-break-time {
+	font-size: 28px;
+	font-weight: 600;
+	color: #7c3a0a;
+	font-variant-numeric: tabular-nums;
+}
+
+/* ---------- to-do list ---------- */
+
+.bwfl-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.bwfl-item {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	border-radius: 12px;
+	border: 1px solid var(--bwfl-line-soft);
+	background: #fff;
+	overflow: hidden;
+	--bwfl-item-line: var(--bwfl-line-soft);
+}
+
+.bwfl-item.is-running {
+	border-color: var(--bwfl-accent);
+	background: var(--bwfl-accent-soft);
+	--bwfl-item-line: var(--bwfl-accent);
+}
+
+.bwfl-item.is-paused {
+	border-color: #f0d2ae;
+	--bwfl-item-line: #f0d2ae;
+}
+
+.bwfl-item.is-done {
+	background: #f7f9fa;
+}
+
+.bwfl-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-right: 8px;
+}
+
+.bwfl-toggle {
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 60px;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 10px 14px;
+	border: 0;
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+	color: var(--bwfl-ink);
+}
+
+.bwfl-toggle:disabled {
+	cursor: default;
+}
+
+.bwfl-icon {
+	flex: 0 0 auto;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	border: 2px solid #9aa6b1;
+	color: #9aa6b1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.is-paused .bwfl-icon {
+	border-color: #b45309;
+	color: #b45309;
+}
+
+.is-running .bwfl-icon,
+.is-done .bwfl-icon {
+	width: 32px;
+	height: 32px;
+	border-color: var(--bwfl-accent);
+	background: var(--bwfl-accent);
+	color: #fff;
+}
+
+.bwfl-text {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.bwfl-name {
+	font-size: 16px;
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+
+.is-done .bwfl-name {
+	color: var(--bwfl-ink-3);
+}
+
+.bwfl-meta {
+	font-size: 13px;
+	color: var(--bwfl-ink-3);
+}
+
+.is-running .bwfl-meta,
+.is-running .bwfl-time {
+	color: var(--bwfl-accent);
+}
+
+.is-paused .bwfl-meta,
+.is-paused .bwfl-time {
+	color: var(--bwfl-warm);
+}
+
+.bwfl-time {
+	flex: 0 0 auto;
+	font-size: 18px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	color: var(--bwfl-ink-3);
+}
+
+.bwfl-check {
+	flex: 0 0 auto;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 2px solid var(--bwfl-accent);
+	border-radius: 50%;
+	background: #fff;
+	color: var(--bwfl-accent);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	transition: opacity 0.15s, background 0.15s;
+}
+
+.bwfl-row:hover .bwfl-check,
+.bwfl-row:focus-within .bwfl-check,
+.bwfl-check.is-on {
+	opacity: 1;
+}
+
+.bwfl-check:hover {
+	background: var(--bwfl-accent-soft);
+}
+
+.bwfl-check.is-done {
+	background: var(--bwfl-accent);
+	color: #fff;
+	opacity: 0;
+}
+
+.bwfl-row:hover .bwfl-check.is-done,
+.bwfl-row:focus-within .bwfl-check.is-done {
+	opacity: 1;
+}
+
+@media (hover: none) {
+	.bwfl-check {
+		opacity: 0.75;
+	}
+}
+
+.bwfl-quote {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	padding: 10px 16px 12px 60px;
+	border-top: 1px dashed var(--bwfl-item-line);
+	animation: bwfl-in 0.4s ease-out;
+}
+
+.bwfl-spark {
+	flex: 0 0 auto;
+	margin-top: 1px;
+	color: var(--bwfl-accent);
+}
+
+.bwfl-quote-label {
+	display: block;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--bwfl-accent);
+}
+
+.bwfl-quote-text {
+	display: block;
+	font-size: 15px;
+	color: #1f2e3a;
+}
+
+@container (max-width: 480px) {
+	.bwfl-toggle {
+		gap: 10px;
+		padding: 10px;
+	}
+
+	.bwfl-quote {
+		padding-left: 16px;
+	}
+}
+
+/* ---------- settings & export ---------- */
+
+.bwfl-setting {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.bwfl-setting-field {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-setting input {
+	width: 72px;
+	min-height: 44px;
+	padding: 0 10px;
+	border: 1px solid #c5cdd5;
+	border-radius: 10px;
+	font-size: 16px;
+	font-weight: 500;
+	text-align: right;
+}
+
+.bwfl-card:has(.bwfl-setting) {
+	gap: 12px;
+}
+
+.bwfl-coach-settings {
+	border-top: 1px solid var(--bwfl-line-soft);
+	padding-top: 12px;
+}
+
+.bwfl-coach-settings summary {
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.bwfl-coach-settings label {
+	display: block;
+	margin: 12px 0 4px;
+	font-size: 14px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-coach-settings textarea,
+.bwfl-coach-settings input {
+	padding: 10px;
+	font-size: 13px;
+}
+
+.bwfl-coach-settings .bwfl-actions {
+	margin-top: 12px;
+}
+
+.bwfl-dark {
+	background: var(--bwfl-ink);
+	color: #fff;
+	border: 0;
+	gap: 12px;
+}
+
+.bwfl-file-meta {
+	font-size: 13px;
+	color: #b9c3cc;
+}
+
+.bwfl-export {
+	margin: 0;
+	padding: 14px;
+	border-radius: 10px;
+	background: #0b131b;
+	font: 400 13px/1.7 var(--bwfl-mono);
+	color: #e6ebef;
+	white-space: pre-wrap;
+	word-break: break-word;
+	max-height: 420px;
+	overflow: auto;
+}
+
+.bwfl-status {
+	font-size: 13px;
+	color: #b9c3cc;
+	min-height: 1.2em;
+}
+
+.bwfl-status.is-warn {
+	color: #fbbf24;
+}
+
+/* ---------- history ---------- */
+
+.bwfl-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 16px;
+}
+
+.bwfl-stat {
+	padding: 20px;
+	gap: 6px;
+}
+
+.bwfl-stat > span {
+	font-size: 14px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-stat > strong {
+	font-size: 36px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.bwfl-stat > .bwfl-accent {
+	font-weight: 600;
+	color: var(--bwfl-accent);
+}
+
+.bwfl-chart-wrap {
+	overflow-x: auto;
+}
+
+.bwfl-chart {
+	min-width: 640px;
+	display: grid;
+	grid-template-columns: repeat(14, minmax(0, 1fr));
+	gap: 10px;
+	align-items: end;
+}
+
+.bwfl-col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	color: var(--bwfl-ink-2);
+}
+
+.bwfl-col-val {
+	font-size: 13px;
+	font-weight: 600;
+	color: #3a4651;
+	font-variant-numeric: tabular-nums;
+}
+
+.bwfl-col-track {
+	height: 200px;
+	width: 100%;
+	display: flex;
+	align-items: flex-end;
+}
+
+.bwfl-col-bar {
+	display: block;
+	width: 100%;
+	background: #9fb3c2;
+	border-radius: 6px 6px 2px 2px;
+}
+
+.bwfl-col.is-today .bwfl-col-bar {
+	background: var(--bwfl-accent);
+}
+
+.bwfl-col-date {
+	font-weight: 600;
+}
+
+.bwfl-col.is-today .bwfl-col-day,
+.bwfl-col.is-today .bwfl-col-date {
+	color: var(--bwfl-accent);
+}
+
+.bwfl-col-min {
+	color: var(--bwfl-ink-3);
+	white-space: nowrap;
+}
+
+/* ---------- celebration ---------- */
+
+.bwfl-party {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 96px 16px 0;
+	pointer-events: none;
+	z-index: 100000;
+	overflow: hidden;
+}
+
+.bwfl-confetti {
+	position: absolute;
+	top: 60px;
+	border-radius: 2px;
+	animation: bwfl-fall 2s ease-in forwards;
+}
+
+.bwfl-party-card {
+	background: #fff;
+	color: var(--bwfl-ink);
+	border-radius: 20px;
+	box-shadow: 0 24px 60px rgb(21 32 43 / 28%);
+	padding: 22px 26px;
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	max-width: 480px;
+	animation: bwfl-pop 0.5s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+
+.bwfl-party-icon {
+	flex: 0 0 auto;
+	animation: bwfl-wiggle 0.8s ease-in-out 2;
+}
+
+.bwfl-party-title {
+	font-size: 24px;
+	font-weight: 700;
+}
+
+.bwfl-party-text {
+	margin-top: 4px;
+	font-size: 15px;
+	line-height: 1.45;
+	color: #2e3b47;
+}
+
+@keyframes bwfl-pop {
+	0% { transform: scale(0.6) translateY(-10px); opacity: 0; }
+	100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes bwfl-in {
+	from { opacity: 0; transform: translateY(-4px); }
+	to { opacity: 1; transform: none; }
+}
+
+@keyframes bwfl-fall {
+	0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+	100% { transform: translateY(460px) rotate(600deg); opacity: 0; }
+}
+
+@keyframes bwfl-wiggle {
+	0%, 100% { transform: rotate(0deg); }
+	25% { transform: rotate(-12deg); }
+	75% { transform: rotate(10deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bwfl-app *,
+	.bwfl-party * {
+		animation: none !important;
+		transition: none !important;
+	}
+}
+
+@media (max-width: 600px) {
+	.bwfl-app {
+		padding: 16px 12px 48px;
+	}
+
+	.bwfl-card {
+		padding: 16px;
+	}
+}

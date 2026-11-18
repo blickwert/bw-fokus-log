@@ -1,0 +1,25 @@
+{
+	"name": "bw-fokus-log",
+	"version": "2.0.0",
+	"private": true,
+	"description": "Browser app of the BW Fokus-Log plugin",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"build": "wp-scripts build --webpack-src-dir=app --output-path=free/build",
+		"start": "wp-scripts start --webpack-src-dir=app --output-path=free/build",
+		"typecheck": "tsc --noEmit",
+		"i18n": "python3 scripts/i18n.py"
+	},
+	"devDependencies": {
+		"@types/react": "^18.3.0",
+		"@types/wordpress__hooks": "^2.4.0",
+		"@wordpress/scripts": "^30.0.0",
+		"typescript": "^5.6.0"
+	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^7.0.0",
+		"@wordpress/element": "^6.0.0",
+		"@wordpress/hooks": "^4.0.0",
+		"@wordpress/i18n": "^5.0.0"
+	}
+}

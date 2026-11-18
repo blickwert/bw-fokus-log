@@ -1,108 +1,77 @@
-# Fokus-Log – WordPress-Plugin
+# BW Fokus-Log
 
-Ein einfacher Tagesplaner gegen Aufschieben: Du schreibst den Plan als Textliste, jede Zeile wird zu einem antippbaren Element mit Timer. Zwischen den To-dos gibt es Pausen mit festem Ende, ein Coach motiviert dich, und der Verlauf zeigt, wie du über die Wochen mehr schaffst.
+A daily planner against procrastination. Write your day as a text list; every line becomes a tappable to-do with a timer. Between to-dos there is a break with a fixed end, a coach motivates you, and the history shows how you get more done over the weeks.
 
-## Funktionen
+German UI is included (`de_DE`); the source language is English.
 
-- **Tagesplan als Text**: eine Zeile pro To-do, beginnend mit `- `
-- **Antippen** startet bzw. pausiert den Timer. Startest du ein anderes To-do, pausiert das laufende automatisch.
-- **Haken** (erscheint beim Drüberfahren, auf dem Handy immer sichtbar): hakt ein To-do ab, auch ohne Timer. Ein Klick auf den Haken eines erledigten To-dos öffnet es wieder.
-- **Pause zwischen To-dos** mit Countdown, Ton am Ende und Knopf „Weiter starten“. Die Länge stellst du in der App ein.
-- **Coach**: Unter dem laufenden To-do steht bei jedem Start ein neuer Spruch. Beim Abhaken kommt eine Party-Einblendung mit Konfetti.
-- **Speicherformat** wie eine Textdatei, automatisch gespeichert (zum Kopieren oder als `.txt` herunterladen):
+## Features
+
+- **Day plan as text**: one line per to-do, starting with `- `.
+- **Tap** to start or pause the timer. Starting another to-do pauses the running one.
+- **Tick** (shown on hover, always on touch devices) ticks a to-do off, with or without timer. Clicking the tick of a finished to-do reopens it.
+- **Break between to-dos** with countdown, sound at the end and a "Start next" button. The length is set in the app.
+- **Coach**: a new saying under the running to-do at every start; a party with confetti when you tick off. Administrators can change the sayings (placeholders `{t}` to-do, `{d}` duration, `{n}` done, `{total}` all).
+- **Saved like a text file** (copy or download as `.txt`):
   ```
-  - Spazieren gehen {08:30|09:05|00:35}
-  - Bett machen {09:10|09:16|00:06}
-  - Briefe öffnen {09:20||00:04}
-  - Staubsaugen
+  - Go for a walk {08:30|09:05|00:35}
+  - Make the bed {09:10|09:16|00:06}
+  - Open the mail {09:20||00:04}
+  - Vacuum
   ```
-  `{start|ende|dauer}`: Die Dauer ist die reine Timerzeit (hh:mm), ohne Pausen. Ist die Endzeit leer, wurde das To-do angefangen, aber noch nicht abgeschlossen.
-- **Offene von gestern holen**: übernimmt alles, was gestern offen geblieben ist, in den neuen Plan.
-- **Verlauf**: erledigte To-dos und Fokuszeit der letzten 14 Tage, mit Vergleich zur Vorwoche.
-- Der Tab-Titel zeigt den laufenden Timer bzw. die Pause, so siehst du ihn auch in einem anderen Tab.
-- Jeder angemeldete Benutzer sieht nur seine eigenen Daten.
+  `{start|end|duration}`: the duration is pure timer time (hh:mm), without breaks. An empty end means started but not finished.
+- **Get open ones from yesterday**.
+- **History**: done to-dos and focus time of the last 14 days, compared with the week before.
+- The tab title shows the running timer or break.
+- Every signed-in user sees only their own data.
 
-## Installation
+## Use
 
-**Variante A – ZIP (am einfachsten)**
-1. `fokus-log-1.0.0.zip` herunterladen.
-2. WordPress-Backend → *Plugins → Installieren → Plugin hochladen* → ZIP auswählen → *Jetzt installieren* → *Aktivieren*.
+- **Admin**: menu item **Fokus-Log**.
+- **Website**: add the block **Fokus-Log** or the shortcode `[bw_fokus_log]` to a (preferably private) page. Visitors who are not signed in see a login link.
+- Shortcut in the plan editor: **Ctrl/Cmd + Enter** applies the plan.
 
-**Variante B – aus dem Repo**
-```bash
-cd wp-content/plugins
-git clone <dein-repo-url> fokus-log
-```
-Dann im Backend unter *Plugins* aktivieren.
+## Install
 
-Beim Aktivieren wird die Tabelle `wp_fokus_log_days` angelegt.
+Download `bw-fokus-log-<version>.zip` and upload it under *Plugins → Add New → Upload Plugin*. The table `{prefix}fokus_log_days` is created on activation.
 
-## Benutzung
-
-- **Backend**: Menüpunkt **Fokus-Log** (Uhr-Symbol).
-- **Frontend**: eine (am besten private) Seite anlegen und den Shortcode einfügen:
-  ```
-  [fokus_log]
-  ```
-  Wer nicht angemeldet ist, sieht nur einen Login-Link.
-- **Sprüche anpassen**: *Einstellungen → Fokus-Log*. Ein Spruch pro Zeile. Platzhalter: `{t}` = To-do, `{d}` = Dauer, `{n}` = erledigt, `{total}` = gesamt.
-- Tastenkürzel im Plan-Editor: **Strg/Cmd + Enter** = Plan übernehmen.
-
-## Repo als Git-Repository veröffentlichen
+From the repo, for development:
 
 ```bash
-cd fokus-log
-git init
-git add .
-git commit -m "Fokus-Log 1.0.0"
-git branch -M main
-git remote add origin git@github.com:<dein-name>/fokus-log.git
-git push -u origin main
+composer --working-dir=free install && npm install && npm run build
+ln -s "$PWD/free" /path/to/wp-content/plugins/bw-fokus-log
 ```
 
-Neue ZIP-Datei bauen (lässt README, bin/ und .git weg):
+## Development
+
 ```bash
-bash bin/build-zip.sh
+composer --working-dir=free lint   # WordPress coding standards
+composer --working-dir=free test   # PHPUnit + Brain Monkey
+npm run typecheck
+npm run build      # app -> free/build (not in Git)
+python3 scripts/i18n.py
+bash scripts/build-zip.sh
 ```
 
-## Aufbau
+Architecture and decisions: see [CLAUDE.md](CLAUDE.md).
 
-```
-fokus-log/
-├── fokus-log.php                      Plugin-Header, lädt alles
-├── uninstall.php                      Beim Löschen: Tabelle + Optionen entfernen
-├── includes/
-│   ├── class-fokus-log-store.php      Tabelle, Text-Parser, Speichern, Verlauf
-│   ├── class-fokus-log-rest.php       REST-API /wp-json/fokus-log/v1/…
-│   ├── class-fokus-log-settings.php   Einstellungen → Fokus-Log (Pause, Sprüche)
-│   └── class-fokus-log-app.php        Menüpunkt + Shortcode, lädt die App
-├── assets/
-│   ├── app.js                         Die App (reines JavaScript, kein Build)
-│   └── app.css                        Styles (Systemschriften, keine externen Fonts)
-├── bin/build-zip.sh                   Baut die installierbare ZIP-Datei
-├── readme.txt                         WordPress-Readme
-└── README.md
-```
+### REST (signed in, nonce `wp_rest`)
 
-### REST-Endpunkte (nur angemeldet, Nonce `wp_rest`)
-
-| Methode | Pfad | Inhalt |
+| Method | Path | Content |
 |---|---|---|
-| GET | `/day?date=YYYY-MM-DD` | Text des Tages |
-| POST | `/day` `{date, content}` | Speichert den Text und berechnet daraus erledigte To-dos und Fokuszeit |
-| GET | `/history?today=YYYY-MM-DD&days=14` | Ein Eintrag pro Tag (fehlende Tage = 0) |
-| POST | `/settings` `{pause}` | Pause in Minuten (pro Benutzer) |
+| GET | `/wp-json/bw-fokus-log/v1/day?date=YYYY-MM-DD` | Text of the day |
+| POST | `/day` `{date, content}` | Saves the text; done count and focus time are derived from it |
+| GET | `/history?today=YYYY-MM-DD&days=14` | One entry per day (missing days = 0) |
+| POST | `/settings` `{pause}` | Break in minutes (per user) |
+| POST | `/coach` `{run, titles, done, allDone}` | Coach sayings (administrators) |
 
-### Wie gespeichert wird
+### How it saves
 
-- Bei jeder Aktion (Start, Pause, Haken, Plan übernehmen), während ein Timer läuft jede Minute, und beim Schließen des Tabs.
-- Zusätzlich gibt es eine lokale Kopie im Browser (`localStorage`). Ist der Server kurz weg, geht nichts verloren, und ein laufender Timer überlebt ein Neuladen der Seite.
-- Das Datum ist das lokale Datum des Browsers. Lässt du die Seite über Mitternacht offen, lade sie am neuen Tag neu.
+On every action (start, pause, tick, apply plan), every minute while a timer runs and when the tab closes. A local copy in the browser (`localStorage`) keeps your work if the server is briefly unreachable and lets a running timer survive a reload. The date is the browser's local date; after midnight, reload the page.
 
-## Anforderungen
+## Requirements
 
-WordPress 6.0+, PHP 7.4+. Getestet wurde die Logik, nicht jede Theme-Kombination. Falls ein Theme die Knöpfe überschreibt, in `assets/app.css` nachschärfen.
+WordPress 6.4+, PHP 8.3+.
 
-## Lizenz
+## License
 
 GPL-2.0-or-later

@@ -1,0 +1,506 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: BW Fokus-Log\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: bw-fokus-log\n"
+
+#: free/src/Modules/Coach/Service/CoachService.php:44
+msgid "\"{t}\" is already trembling. It knows you are coming."
+msgstr "„{t}“ zittert schon. Es weiß, dass du kommst."
+
+#: free/src/Modules/Coach/Service/CoachService.php:66
+msgid "\"{t}\" is history. Off to the success list!"
+msgstr "„{t}“ ist Geschichte. Ab auf die Erfolgsliste!"
+
+#: app/lib/format.ts:11
+#, php-format
+msgid "%1$d h %2$d min"
+msgstr "%1$d h %2$d min"
+
+#: app/modules/planner/TodayView.tsx:47
+#, php-format
+msgid "%1$d of %2$d done"
+msgstr "%1$d von %2$d erledigt"
+
+#: app/lib/format.ts:8
+#, php-format
+msgid "%d min"
+msgstr "%d min"
+
+#: app/modules/planner/PlanEditor.tsx:25
+#, php-format
+msgid "%d open to-dos carried over from yesterday."
+msgstr "%d offene To-dos von gestern übernommen."
+
+#: app/modules/planner/HistoryView.tsx:52
+#, php-format
+msgid "%d to-dos"
+msgstr "%d To-dos"
+
+#: app/modules/planner/HistoryView.tsx:61
+#, php-format
+msgid "%s compared to last week"
+msgstr "%s gegenüber Vorwoche"
+
+#: app/modules/planner/HistoryView.tsx:54
+#: app/modules/planner/TodayView.tsx:49
+#, php-format
+msgid "%s focus"
+msgstr "%s Fokus"
+
+#: app/modules/planner/ExportCard.tsx:40
+msgid ".txt"
+msgstr ".txt"
+
+#: free/src/Modules/Coach/Service/CoachService.php:49
+msgid "Act first, think later. The other way round, for once."
+msgstr "Erst machen, dann denken. Heute mal andersrum."
+
+#: app/modules/coach/CoachSettings.tsx:30
+msgid "Adjust coach sayings"
+msgstr "Coach-Sprüche anpassen"
+
+#: app/modules/coach/index.ts:38
+msgid "All done!"
+msgstr "Alles erledigt!"
+
+#: app/modules/planner/PlanEditor.tsx:50
+msgid "Apply plan"
+msgstr "Plan übernehmen"
+
+#: app/modules/planner/HistoryView.tsx:65
+msgid "Avg. focus time per day, last 7 days"
+msgstr "Ø Fokuszeit pro Tag, letzte 7 Tage"
+
+#: app/modules/planner/HistoryView.tsx:57
+msgid "Avg. to-dos per day, last 7 days"
+msgstr "Ø To-dos pro Tag, letzte 7 Tage"
+
+#: free/bw-fokus-log.php:35
+msgid "BW Fokus-Log: the Composer autoloader is missing. Install the release ZIP or run \"composer install\"."
+msgstr "BW Fokus-Log: Der Composer-Autoloader fehlt. Installiere die Release-ZIP oder führe „composer install“ aus."
+
+#: app/modules/planner/HistoryView.tsx:78
+msgid "Bar chart of the done to-dos of the last 14 days"
+msgstr "Balkendiagramm der erledigten To-dos der letzten 14 Tage"
+
+#: free/src/Modules/Coach/Service/CoachService.php:59
+msgid "Boom!"
+msgstr "Boom!"
+
+#: app/modules/planner/store.tsx:354
+#, php-format
+msgid "Break %s"
+msgstr "Pause %s"
+
+#: app/modules/planner/SettingsCard.tsx:14
+msgid "Break between to-dos"
+msgstr "Pause zwischen To-dos"
+
+#: app/modules/planner/BreakBanner.tsx:19
+msgid "Break over – let’s go."
+msgstr "Pause vorbei – weiter geht’s."
+
+#: app/modules/planner/store.tsx:354
+msgid "Break over!"
+msgstr "Pause vorbei!"
+
+#: app/modules/planner/BreakBanner.tsx:19
+msgid "Break – well done."
+msgstr "Pause – gut gemacht."
+
+#: free/src/Modules/Coach/Service/CoachService.php:54
+msgid "Breathe, relax your shoulders – you have this under control."
+msgstr "Kurz durchatmen, Schultern locker – du hast das im Griff."
+
+#: app/modules/planner/PlanEditor.tsx:57
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: free/src/Modules/Coach/CoachModule.php:34
+msgid "Coach"
+msgstr "Coach"
+
+#: app/modules/planner/ExportCard.tsx:37
+msgid "Copied ✓"
+msgstr "Kopiert ✓"
+
+#: app/modules/planner/ExportCard.tsx:37
+msgid "Copy"
+msgstr "Kopieren"
+
+#: app/modules/coach/CoachSettings.tsx:25
+msgid "Could not be saved."
+msgstr "Konnte nicht gespeichert werden."
+
+#: app/modules/planner/TodayView.tsx:32
+msgid "Day plan"
+msgstr "Tagesplan"
+
+#: free/src/Modules/Planner/PlannerModule.php:47
+msgid "Day plan as text, timer per to-do, breaks and history."
+msgstr "Tagesplan als Text, Timer pro To-do, Pausen und Verlauf."
+
+#: app/modules/planner/TodoItem.tsx:64
+msgid "Done"
+msgstr "Erledigt"
+
+#: app/modules/planner/HistoryView.tsx:74
+msgid "Done to-dos per day · 14 days"
+msgstr "Erledigte To-dos pro Tag · 14 Tage"
+
+#: free/src/Modules/Coach/Service/CoachService.php:57
+#: app/modules/coach/index.ts:41
+msgid "Done!"
+msgstr "Geschafft!"
+
+#: app/modules/planner/TodoItem.tsx:63
+msgid "Done: "
+msgstr "Erledigt: "
+
+#: app/modules/planner/TodayView.tsx:35
+msgid "Edit plan"
+msgstr "Plan bearbeiten"
+
+#: free/src/Modules/Coach/Service/CoachService.php:45
+msgid "Every minute here is one minute less weight on your mind."
+msgstr "Jede Minute hier ist eine Minute weniger Last im Kopf."
+
+#: app/modules/planner/PlanEditor.tsx:21
+msgid "Everything was done yesterday – nothing to carry over."
+msgstr "Gestern ist alles erledigt – nichts zu übernehmen."
+
+#: free/src/Modules/Coach/Service/CoachService.php:69
+msgid "Finished in {d}. Clean work!"
+msgstr "Erledigt in {d}. Saubere Arbeit!"
+
+#: free/src/Modules/Coach/Service/CoachService.php:46
+msgid "Focus mode: on. Excuse mode: offline."
+msgstr "Fokus-Modus: aktiviert. Ausreden-Modus: offline."
+
+#: free/src/Core/Admin/AppPage.php:35
+#: free/src/Core/Admin/AppPage.php:36
+#: app/components/Shell.tsx:24
+msgid "Fokus-Log"
+msgstr "Fokus-Log"
+
+#: app/modules/planner/ExportCard.tsx:44
+msgid "Format:"
+msgstr "Format:"
+
+#: app/modules/planner/PlanEditor.tsx:53
+msgid "Get open ones from yesterday"
+msgstr "Offene von gestern holen"
+
+#: app/modules/coach/CoachSettings.tsx:36
+msgid "Headlines when ticking off"
+msgstr "Überschriften beim Abhaken"
+
+#: free/src/Modules/Coach/Service/CoachService.php:71
+msgid "High five! Enjoy the break, you earned it."
+msgstr "High five! Gönn dir die Pause, du hast sie verdient."
+
+#: app/modules/planner/index.ts:9
+msgid "History"
+msgstr "Verlauf"
+
+#: free/src/Modules/Coach/Service/CoachService.php:51
+msgid "Just keep going. I will tell you when it is party time."
+msgstr "Einfach dranbleiben. Ich sag Bescheid, wenn’s Party gibt."
+
+#: app/modules/planner/HistoryView.tsx:68
+#, php-format
+msgid "Last week: %s"
+msgstr "Vorwoche: %s"
+
+#: free/src/Modules/Coach/Service/CoachService.php:47
+msgid "Like cycling: pedal steadily, do not sprint."
+msgstr "Wie beim Radeln: gleichmäßig treten, nicht sprinten."
+
+#: free/templates/planner/app.php:14
+#: app/modules/planner/TodayView.tsx:19
+msgid "Loading Fokus-Log …"
+msgstr "Fokus-Log wird geladen …"
+
+#: app/modules/planner/HistoryView.tsx:29
+msgid "Loading history …"
+msgstr "Verlauf wird geladen …"
+
+#: free/src/Modules/Coach/CoachModule.php:41
+msgid "Motivating sayings while you work and a party when you tick something off."
+msgstr "Motivierende Sprüche während der Arbeit und eine Party beim Abhaken."
+
+#: app/components/Shell.tsx:25
+msgid "My day"
+msgstr "Mein Tag"
+
+#: app/modules/planner/BreakBanner.tsx:21
+#, php-format
+msgid "Next: %s"
+msgstr "Danach: %s"
+
+#: app/components/Shell.tsx:14
+msgid "No active module provides a page."
+msgstr "Kein aktives Modul liefert eine Seite."
+
+#: free/src/Modules/Coach/Service/CoachService.php:43
+msgid "Not perfect – just done. That is plenty."
+msgstr "Nicht perfekt – nur fertig. Das reicht völlig."
+
+#: app/modules/planner/store.tsx:145
+msgid "Not saved – kept locally, will retry"
+msgstr "Nicht gespeichert – lokal gesichert, neuer Versuch folgt"
+
+#: free/src/Modules/Coach/Service/CoachService.php:67
+msgid "One less on your mind. Feels good, right?"
+msgstr "Wieder eins weniger im Kopf. Fühlt sich gut an, oder?"
+
+#: app/modules/planner/PlanEditor.tsx:33
+msgid "One line per to-do, starting with \"- \". Lines that already have {start|end|duration} are kept."
+msgstr "Eine Zeile pro To-do, beginnend mit „- “. Bereits erledigte Zeilen mit {start|ende|dauer} werden übernommen."
+
+#: free/src/Modules/Coach/Service/CoachService.php:73
+msgid "One more tick. Your future self says thanks."
+msgstr "Ein Haken mehr. Dein Zukunfts-Ich bedankt sich."
+
+#: app/modules/coach/CoachSettings.tsx:32
+msgid "One saying per line. Placeholders: {t} to-do, {d} duration, {n} done, {total} all. Empty fields restore the defaults."
+msgstr "Ein Spruch pro Zeile. Platzhalter: {t} To-do, {d} Dauer, {n} erledigt, {total} gesamt. Leere Felder stellen die Standardtexte wieder her."
+
+#: app/components/Shell.tsx:26
+msgid "Open does not mean failed – it means: still on it."
+msgstr "Offen heißt nicht versagt – es heißt: noch dran."
+
+#: app/modules/planner/TodoItem.tsx:37
+msgid "Pause: "
+msgstr "Pausieren: "
+
+#: free/src/Modules/Coach/Service/CoachService.php:38
+msgid "Phone face down, focus on. I will watch the clock."
+msgstr "Handy umdrehen, Fokus an. Ich pass auf die Zeit auf."
+
+#: free/src/Modules/Planner/PlannerModule.php:40
+msgid "Planner"
+msgstr "Planer"
+
+#: free/src/Modules/Planner/Controller/AppController.php:57
+#, php-format
+msgid "Please %s to see your day plan."
+msgstr "Bitte %s, um deinen Tagesplan zu sehen."
+
+#: app/modules/planner/TodoItem.tsx:54
+msgid "Reopen"
+msgstr "Wieder öffnen"
+
+#: app/modules/planner/TodoItem.tsx:53
+msgid "Reopen: "
+msgstr "Wieder öffnen: "
+
+#: app/modules/coach/CoachSettings.tsx:44
+msgid "Save sayings"
+msgstr "Sprüche speichern"
+
+#: app/modules/planner/ExportCard.tsx:34
+msgid "Saved as text"
+msgstr "Gespeichert als Text"
+
+#: app/modules/planner/store.tsx:141
+#, php-format
+msgid "Saved at %s"
+msgstr "Gespeichert um %s"
+
+#: app/modules/coach/CoachSettings.tsx:23
+msgid "Saved."
+msgstr "Gespeichert."
+
+#: app/modules/planner/store.tsx:136
+msgid "Saving …"
+msgstr "Speichert …"
+
+#: app/modules/coach/CoachSettings.tsx:40
+msgid "Saying when everything is done"
+msgstr "Spruch, wenn alles erledigt ist"
+
+#: app/modules/coach/CoachSettings.tsx:38
+msgid "Sayings when ticking off"
+msgstr "Sprüche beim Abhaken"
+
+#: free/src/Modules/Coach/Service/CoachService.php:74
+msgid "See? Not as bad as it felt."
+msgstr "Siehst du? Gar nicht so schlimm, wie es sich angefühlt hat."
+
+#: app/modules/planner/SettingsCard.tsx:12
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: free/src/Modules/Coach/Service/CoachService.php:39
+msgid "Small step, big effect. Keep going!"
+msgstr "Kleiner Schritt, große Wirkung. Weiter so!"
+
+#: app/modules/planner/BreakBanner.tsx:26
+msgid "Start next"
+msgstr "Weiter starten"
+
+#: app/modules/planner/TodoItem.tsx:37
+msgid "Start: "
+msgstr "Starten: "
+
+#: free/src/Modules/Coach/Service/CoachService.php:63
+msgid "Strong!"
+msgstr "Stark!"
+
+#: free/src/Modules/Coach/Service/CoachService.php:41
+msgid "Sudden idea? Note it quickly, celebrate later. Only this matters now."
+msgstr "Spontane Idee? Kurz merken, später feiern. Jetzt zählt nur das hier."
+
+#: free/src/Modules/Coach/Service/CoachService.php:72
+msgid "Take the momentum with you – the next one gets easier."
+msgstr "Schwung mitnehmen – das nächste wird leichter."
+
+#: app/modules/planner/TodayView.tsx:62
+msgid "Tap = start or pause. The tick on the right (appears on hover) ticks a to-do off – even without a timer."
+msgstr "Antippen = starten bzw. pausieren. Der Haken rechts (erscheint beim Drüberfahren) hakt ein To-do als erledigt ab – auch ohne Timer."
+
+#: app/modules/planner/TodoItem.tsx:16
+msgid "Tap to start"
+msgstr "Antippen zum Starten"
+
+#: free/src/Modules/Coach/Service/CoachService.php:68
+msgid "That was not a to-do, that was a statement."
+msgstr "Das war kein To-do, das war ein Statement."
+
+#: free/src/Core/App.php:29
+msgid "The Fokus-Log app has not been built yet. Run \"npm run build\"."
+msgstr "Die Fokus-Log-App wurde noch nicht gebaut. Führe „npm run build“ aus."
+
+#: app/modules/planner/SettingsCard.tsx:27
+msgid "The break has a fixed end – so 5 minutes of phone never turn into an hour."
+msgstr "Die Pause hat ein festes Ende – so wird aus 5 Minuten Handy keine Stunde."
+
+#: free/src/Modules/Planner/Controller/RestController.php:154
+msgid "The day plan is too long."
+msgstr "Der Tagesplan ist zu lang."
+
+#: app/modules/planner/HistoryView.tsx:32
+msgid "The history could not be loaded."
+msgstr "Der Verlauf konnte nicht geladen werden."
+
+#: app/modules/planner/HistoryView.tsx:96
+msgid "The history simply reads the saved day plans – empty days are breaks, not setbacks."
+msgstr "Der Verlauf liest einfach die gespeicherten Tagespläne – leere Tage sind Pausen, kein Rückschritt."
+
+#: app/modules/planner/TodayView.tsx:28
+msgid "The server could not be reached – you are working with the local copy."
+msgstr "Der Server war nicht erreichbar – du arbeitest mit der lokalen Kopie."
+
+#: free/src/Modules/Coach/Service/CoachService.php:40
+msgid "The social media world can do without you for a few minutes. Promise."
+msgstr "Die Social-Media-Welt kommt ein paar Minuten ohne dich aus. Versprochen."
+
+#: free/src/Modules/Coach/Service/CoachService.php:48
+msgid "The timer runs – and so do you. Strong!"
+msgstr "Der Timer läuft – und du läufst mit. Stark!"
+
+#: free/src/Modules/Coach/Service/CoachService.php:75
+msgid "The to-do list just gained respect for you."
+msgstr "Die To-do-Liste hat gerade Respekt vor dir."
+
+#: free/src/Modules/Coach/Service/CoachService.php:79
+msgid "The whole plan is ticked off. Today you are the boss – celebrate!"
+msgstr "Der ganze Plan ist abgehakt. Heute bist du der Boss – feier dich!"
+
+#: free/src/Modules/Coach/Service/CoachService.php:77
+msgid "This is how it works: just do it."
+msgstr "Genau so geht das: einfach machen."
+
+#: free/src/Modules/Coach/Service/CoachService.php:61
+msgid "Ticked off!"
+msgstr "Abgehakt!"
+
+#: app/modules/planner/index.ts:8
+#: app/modules/planner/HistoryView.tsx:50
+#: app/modules/planner/HistoryView.tsx:88
+msgid "Today"
+msgstr "Heute"
+
+#: app/modules/planner/HistoryView.tsx:75
+msgid "Today is live"
+msgstr "Heute live"
+
+#: app/components/Shell.tsx:28
+msgid "View"
+msgstr "Ansicht"
+
+#: app/modules/coach/CoachSettings.tsx:34
+msgid "While you work"
+msgstr "Während der Arbeit"
+
+#: free/src/Modules/Coach/Service/CoachService.php:53
+msgid "Whoever starts \"{t}\" has already half won."
+msgstr "Wer „{t}“ startet, hat schon halb gewonnen."
+
+#: free/src/Modules/Coach/Service/CoachService.php:62
+msgid "Yes!"
+msgstr "Yes!"
+
+#: app/modules/planner/PlanEditor.tsx:19
+msgid "Yesterday could not be loaded."
+msgstr "Gestern konnte nicht geladen werden."
+
+#: free/src/Modules/Coach/Service/CoachService.php:52
+msgid "You are building momentum right now. Do not brake!"
+msgstr "Gerade baust du Schwung auf. Nicht bremsen!"
+
+#: free/src/Modules/Coach/Service/CoachService.php:50
+msgid "You are collecting proof that you can do it."
+msgstr "Du sammelst gerade Beweise, dass du’s kannst."
+
+#: free/src/Modules/Coach/Service/CoachService.php:60
+msgid "You are on a roll!"
+msgstr "Läuft bei dir!"
+
+#: free/src/Modules/Coach/Service/CoachService.php:42
+msgid "You are the opposite of \"I will do it in a bit\" right now: you are doing it."
+msgstr "Du bist gerade das Gegenteil von „mach ich gleich“: Du machst es."
+
+#: free/src/Modules/Coach/Service/CoachService.php:70
+msgid "You kept your word – to yourself. That counts most."
+msgstr "Du hast Wort gehalten – dir selbst gegenüber. Das zählt am meisten."
+
+#: free/src/Modules/Coach/Service/CoachService.php:37
+msgid "You started – that was the hardest part. The rest is routine."
+msgstr "Du hast angefangen – das war der schwerste Teil. Der Rest ist Formsache."
+
+#: app/modules/planner/TodoItem.tsx:74
+msgid "Your coach"
+msgstr "Dein Coach"
+
+#: free/src/Modules/Coach/Service/CoachService.php:58
+msgid "Zap, finished!"
+msgstr "Zack, erledigt!"
+
+#: app/modules/planner/SettingsCard.tsx:24
+msgid "min"
+msgstr "min"
+
+#: app/modules/planner/TodoItem.tsx:23
+msgid "paused · tap to continue"
+msgstr "pausiert · antippen zum Fortsetzen"
+
+#: app/modules/planner/TodoItem.tsx:21
+#, php-format
+msgid "running · started %s"
+msgstr "läuft · gestartet %s"
+
+#: free/src/Modules/Planner/Controller/AppController.php:58
+msgid "sign in"
+msgstr "anmelden"
+
+#: free/src/Modules/Coach/Service/CoachService.php:76
+msgid "{n} of {total} done. Going well!"
+msgstr "{n} von {total} geschafft. Läuft!"
+
