@@ -4,3 +4,4 @@ free/build/
 .phpunit.cache/
 .phpunit.result.cache
 *.zip
+__pycache__/
