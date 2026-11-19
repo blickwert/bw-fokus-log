@@ -32,7 +32,14 @@ class Fokus_Log_App {
 		return self::render();
 	}
 
+	/** Die App gibt es einmal je Seite; ein zweiter Shortcode bleibt leer. */
+	private static $rendered = false;
+
 	public static function render() {
+		if ( self::$rendered ) {
+			return '';
+		}
+		self::$rendered = true;
 		self::enqueue();
 		return '<div id="fokus-log-app" class="fokus-log" aria-live="off"><p class="fl-loading">Fokus-Log wird geladen …</p></div>';
 	}
@@ -47,6 +54,8 @@ class Fokus_Log_App {
 		$config = array(
 			'restUrl' => esc_url_raw( rest_url( Fokus_Log_Rest::NS . '/' ) ),
 			'nonce'   => wp_create_nonce( 'wp_rest' ),
+			// Holt einen neuen Schlüssel, wenn die App länger offen ist als er gilt.
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 			'userId'  => (int) $user->ID,
 			'name'    => $user->display_name,
 			'pause'   => Fokus_Log_Settings::user_pause( $user->ID ),

@@ -1,8 +1,10 @@
 <?php
 /**
  * REST-Schnittstelle: /wp-json/fokus-log/v1/…
- *   GET  day?date=YYYY-MM-DD          → { date, content, exists }
- *   POST day  { date, content }       → { saved, total, done, seconds }
+ *   GET  day?date=YYYY-MM-DD          → { date, content, exists, rev }
+ *   POST day  { date, content, base } → { saved, total, done, seconds, rev }
+ *        base = Revision, auf der die Änderung beruht; hat ein anderes Gerät inzwischen
+ *        gespeichert: 409 fokus_log_conflict mit dem aktuellen Stand in data.current
  *   GET  history?today=…&days=14      → [ { date, total, done, seconds } ]
  *   POST settings { pause }           → { pause }
  * Jeder angemeldete Benutzer sieht nur seine eigenen Daten.
@@ -42,6 +44,10 @@ class Fokus_Log_Rest {
 						'content' => array(
 							'required' => true,
 							'type'     => 'string',
+						),
+						'base'    => array(
+							'type'    => 'integer',
+							'minimum' => 0,
 						),
 					),
 				),
@@ -98,23 +104,40 @@ class Fokus_Log_Rest {
 	}
 
 	public static function get_day( WP_REST_Request $request ) {
-		$date = $request['date'];
-		$row  = Fokus_Log_Store::get_day( get_current_user_id(), $date );
-		return rest_ensure_response(
-			array(
-				'date'    => $date,
-				'exists'  => (bool) $row,
-				'content' => $row ? $row['content'] : '',
-			)
+		return rest_ensure_response( self::day( $request['date'] ) );
+	}
+
+	/** Der gespeicherte Stand eines Tages des aktuellen Benutzers. */
+	private static function day( $date ) {
+		$row = Fokus_Log_Store::get_day( get_current_user_id(), $date );
+		return array(
+			'date'    => $date,
+			'exists'  => (bool) $row,
+			'content' => $row ? $row['content'] : '',
+			'rev'     => $row ? (int) $row['rev'] : 0,
 		);
 	}
 
 	public static function save_day( WP_REST_Request $request ) {
-		$content = sanitize_textarea_field( (string) $request['content'] );
+		$content = Fokus_Log_Store::clean( $request['content'] );
 		if ( strlen( $content ) > Fokus_Log_Store::MAX_LENGTH ) {
 			return new WP_Error( 'fokus_log_too_long', 'Der Tagesplan ist zu lang.', array( 'status' => 400 ) );
 		}
-		$stats = Fokus_Log_Store::save_day( get_current_user_id(), $request['date'], $content );
+		$base  = null === $request['base'] ? null : (int) $request['base'];
+		$stats = Fokus_Log_Store::save_day( get_current_user_id(), $request['date'], $content, $base );
+		if ( 'conflict' === $stats ) {
+			return new WP_Error(
+				'fokus_log_conflict',
+				'Der Tagesplan wurde inzwischen auf einem anderen Gerät geändert.',
+				array(
+					'status'  => 409,
+					'current' => self::day( $request['date'] ),
+				)
+			);
+		}
+		if ( ! is_array( $stats ) ) {
+			return new WP_Error( 'fokus_log_db', 'Der Tagesplan konnte nicht gespeichert werden.', array( 'status' => 500 ) );
+		}
 		return rest_ensure_response( array_merge( array( 'saved' => true ), $stats ) );
 	}
 
