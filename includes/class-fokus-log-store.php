@@ -4,6 +4,10 @@
  * Der Text im Format „- To-do {start|ende|dauer}“ ist die Quelle der Wahrheit,
  * die Zahlen (erledigt, Fokuszeit) werden beim Speichern daraus berechnet –
  * damit der Verlauf schnell geladen werden kann.
+ *
+ * Jede Speicherung zählt die Revision (rev) hoch. Ein Gerät schickt die Revision mit,
+ * auf der seine Änderung beruht; hat inzwischen ein anderes Gerät gespeichert, wird
+ * nichts überschrieben (Konflikt), und das Gerät lädt den neuen Stand.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -12,8 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Fokus_Log_Store {
 
-	const DB_VERSION = '1';
+	const DB_VERSION = '2';
 	const MAX_LENGTH = 100000;
+
+	/** Höchste Dauer eines To-dos (24 Stunden), gegen Tippfehler und Überlauf. */
+	const MAX_SECONDS = 86400;
 
 	public static function table() {
 		global $wpdb;
@@ -35,6 +42,7 @@ class Fokus_Log_Store {
 			total_count smallint(5) unsigned NOT NULL DEFAULT 0,
 			done_count smallint(5) unsigned NOT NULL DEFAULT 0,
 			focus_seconds int(10) unsigned NOT NULL DEFAULT 0,
+			rev int(10) unsigned NOT NULL DEFAULT 0,
 			updated_at datetime NOT NULL,
 			PRIMARY KEY  (id),
 			UNIQUE KEY user_day (user_id,day)
@@ -81,27 +89,48 @@ class Fokus_Log_Store {
 		return $items;
 	}
 
+	/**
+	 * „hh:mm:ss“ oder „hh:mm“ in Sekunden, begrenzt auf 0 bis 24 Stunden.
+	 */
 	public static function parse_duration( $value ) {
 		$parts = array_map( 'intval', explode( ':', trim( (string) $value ) ) );
+		$secs  = 0;
 		if ( 3 === count( $parts ) ) {
-			return $parts[0] * 3600 + $parts[1] * 60 + $parts[2];
+			$secs = $parts[0] * 3600 + $parts[1] * 60 + $parts[2];
+		} elseif ( 2 === count( $parts ) ) {
+			$secs = $parts[0] * 3600 + $parts[1] * 60;
 		}
-		if ( 2 === count( $parts ) ) {
-			return $parts[0] * 3600 + $parts[1] * 60;
-		}
-		return 0;
+		return max( 0, min( self::MAX_SECONDS, $secs ) );
+	}
+
+	/**
+	 * Text so speichern, wie er geschrieben wurde: nur ungültige Zeichen und Steuerzeichen
+	 * entfernen, Zeilenenden vereinheitlichen. Kein HTML-Filter – die App zeigt den Text
+	 * immer maskiert an, „<“, „&“ und Anführungszeichen bleiben so erhalten.
+	 */
+	public static function clean( $text ) {
+		$text = wp_check_invalid_utf8( (string) $text, true );
+		$text = str_replace( array( "\r\n", "\r" ), "\n", $text );
+		return (string) preg_replace( '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $text );
 	}
 
 	public static function get_day( $user_id, $day ) {
 		global $wpdb;
 		$table = self::table();
 		return $wpdb->get_row(
-			$wpdb->prepare( "SELECT content, updated_at FROM {$table} WHERE user_id = %d AND day = %s", $user_id, $day ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->prepare( "SELECT content, rev, updated_at FROM {$table} WHERE user_id = %d AND day = %s", $user_id, $day ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			ARRAY_A
 		);
 	}
 
-	public static function save_day( $user_id, $day, $content ) {
+	/**
+	 * Speichert den Text eines Tages.
+	 *
+	 * $base = Revision, auf der die Änderung beruht (null = ohne Prüfung). Liefert die Zahlen
+	 * mit der neuen Revision, 'conflict', wenn ein anderes Gerät inzwischen gespeichert hat,
+	 * oder 'db_error'.
+	 */
+	public static function save_day( $user_id, $day, $content, $base = null ) {
 		global $wpdb;
 		$table = self::table();
 		$items = self::parse( $content );
@@ -113,32 +142,65 @@ class Fokus_Log_Store {
 			}
 			$secs += $item['seconds'];
 		}
+		$total = min( 65535, count( $items ) );
+		$done  = min( 65535, $done );
+		$secs  = min( 4294967295, $secs );
+		$now   = current_time( 'mysql' );
 
-		$data    = array(
-			'user_id'       => (int) $user_id,
-			'day'           => $day,
-			'content'       => $content,
-			'total_count'   => min( 65535, count( $items ) ),
-			'done_count'    => min( 65535, $done ),
-			'focus_seconds' => $secs,
-			'updated_at'    => current_time( 'mysql' ),
-		);
-		$formats = array( '%d', '%s', '%s', '%d', '%d', '%d', '%s' );
+		$update = static function ( $check ) use ( $wpdb, $table, $content, $total, $done, $secs, $now, $user_id, $day, $base ) {
+			$sql = "UPDATE {$table} SET content = %s, total_count = %d, done_count = %d, focus_seconds = %d, updated_at = %s, rev = rev + 1 WHERE user_id = %d AND day = %s";
+			$arg = array( $content, $total, $done, $secs, $now, (int) $user_id, $day );
+			if ( $check ) {
+				$sql  .= ' AND rev = %d';
+				$arg[] = (int) $base;
+			}
+			return $wpdb->query( $wpdb->prepare( $sql, $arg ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		};
 
-		$existing = $wpdb->get_var(
-			$wpdb->prepare( "SELECT id FROM {$table} WHERE user_id = %d AND day = %s", $user_id, $day ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		);
-
-		if ( $existing ) {
-			$wpdb->update( $table, $data, array( 'id' => (int) $existing ), $formats, array( '%d' ) );
-		} else {
-			$wpdb->insert( $table, $data, $formats );
+		// Vorhandenen Tag ändern – mit Revisionsprüfung, wenn eine Revision mitkommt. Tage aus
+		// Version 1.0.0 haben die Revision 0 und werden so ebenfalls gefunden.
+		$rows = $update( null !== $base );
+		if ( false === $rows ) {
+			return 'db_error';
 		}
+		$saved = $rows > 0;
+		// Neuen Tag anlegen. Legt ein anderes Gerät ihn im selben Moment an, schlägt das
+		// Einfügen am eindeutigen Schlüssel fehl, und es gibt keinen stillen Verlust.
+		if ( ! $saved && ( null === $base || 0 === $base ) ) {
+			$suppress = $wpdb->suppress_errors( true );
+			$saved    = (bool) $wpdb->insert(
+				$table,
+				array(
+					'user_id'       => (int) $user_id,
+					'day'           => $day,
+					'content'       => $content,
+					'total_count'   => $total,
+					'done_count'    => $done,
+					'focus_seconds' => $secs,
+					'rev'           => 1,
+					'updated_at'    => $now,
+				),
+				array( '%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s' )
+			);
+			$wpdb->suppress_errors( $suppress );
+			if ( ! $saved && null === $base ) {
+				// Ohne Prüfung: der Tag ist inzwischen da, also ändern.
+				$saved = (int) $update( false ) > 0;
+				if ( ! $saved ) {
+					return 'db_error';
+				}
+			}
+		}
+		if ( ! $saved ) {
+			return 'conflict';
+		}
+		$row = self::get_day( $user_id, $day );
 
 		return array(
-			'total'   => count( $items ),
+			'total'   => $total,
 			'done'    => $done,
 			'seconds' => $secs,
+			'rev'     => $row ? (int) $row['rev'] : 0,
 		);
 	}
 

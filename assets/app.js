@@ -17,7 +17,8 @@
 	var pad = function (n) { return String(n).padStart(2, '0'); };
 	var dateKey = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
 	var hm = function (ms) { var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
-	var dur = function (s) { s = Math.floor(s); return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor((s % 3600) / 60)); };
+	// Dauer im Text mit Sekunden (hh:mm:ss), damit beim Neuladen nichts verloren geht.
+	var dur = function (s) { s = Math.max(0, Math.floor(s)); return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor((s % 3600) / 60)) + ':' + pad(s % 60); };
 	var clock = function (s) {
 		s = Math.max(0, Math.floor(s));
 		var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
@@ -32,11 +33,13 @@
 			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
 		});
 	};
+	// „hh:mm:ss“ oder ältere „hh:mm“, begrenzt auf 0 bis 24 Stunden wie am Server.
 	var parseDur = function (t) {
 		var p = String(t).trim().split(':').map(function (x) { return parseInt(x, 10) || 0; });
-		if (p.length === 3) { return p[0] * 3600 + p[1] * 60 + p[2]; }
-		if (p.length === 2) { return p[0] * 3600 + p[1] * 60; }
-		return 0;
+		var s = 0;
+		if (p.length === 3) { s = p[0] * 3600 + p[1] * 60 + p[2]; }
+		else if (p.length === 2) { s = p[0] * 3600 + p[1] * 60; }
+		return Math.max(0, Math.min(86400, s));
 	};
 
 	function parse(text) {
@@ -85,12 +88,18 @@
 		tab: 'heute',
 		history: null,
 		loaded: false,
-		loadError: false
+		loadError: false,
+		rev: 0,        // Revision des Servers, auf der der Stand beruht
+		dirty: false,  // Änderungen, die der Server noch nicht hat
+		notice: ''     // Hinweis über dem Plan (z. B. Stand von einem anderen Gerät)
 	};
-	var LOCAL_KEY = 'fokuslog:' + cfg.userId + ':' + S.date;
+	var localKey = function () { return 'fokuslog:' + cfg.userId + ':' + S.date; };
 	var originalTitle = document.title;
 	var lastSave = 0;
 	var saveTimer = null;
+	var retryTimer = null;
+	var saving = false;
+	var saveAgain = false;
 	var partyTimer = null;
 
 	/* ---------- Server ---------- */
@@ -103,7 +112,20 @@
 		return u;
 	}
 
-	function api(path, opts) {
+	// Neuer REST-Schlüssel, wenn der alte abgelaufen ist (App lange offen).
+	function renewNonce() {
+		if (!cfg.ajaxUrl) { return Promise.reject(new Error('no ajax')); }
+		return fetch(cfg.ajaxUrl + '?action=rest-nonce', { credentials: 'same-origin' })
+			.then(function (r) { return r.ok ? r.text() : ''; })
+			.then(function (n) {
+				n = String(n).trim();
+				if (!n || n === '0' || n === '-1') { throw new Error('logged out'); }
+				cfg.nonce = n;
+			});
+	}
+
+	// Fehler tragen status und die Antwort des Servers (data), z. B. beim Konflikt.
+	function api(path, opts, renewed) {
 		opts = opts || {};
 		return fetch(url(path, opts.params), {
 			method: opts.method || 'GET',
@@ -112,24 +134,34 @@
 			headers: { 'X-WP-Nonce': cfg.nonce, 'Content-Type': 'application/json' },
 			body: opts.body ? JSON.stringify(opts.body) : undefined
 		}).then(function (r) {
-			if (!r.ok) { throw new Error('HTTP ' + r.status); }
-			return r.json();
+			return r.json().catch(function () { return null; }).then(function (data) {
+				if (r.ok) { return data; }
+				if (r.status === 403 && !renewed && data && data.code === 'rest_cookie_invalid_nonce') {
+					return renewNonce().then(function () { return api(path, opts, true); });
+				}
+				var err = new Error('HTTP ' + r.status);
+				err.status = r.status;
+				err.data = data;
+				throw err;
+			});
 		});
 	}
 
 	function readLocal() {
-		try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null'); } catch (e) { return null; }
+		try { return JSON.parse(localStorage.getItem(localKey()) || 'null'); } catch (e) { return null; }
 	}
 
-	function persistLocal(saved) {
+	// Lokale Sicherung: der Text, ob der Server ihn schon hat, und auf welcher Revision er beruht.
+	function persistLocal() {
 		var idx = S.items.findIndex(function (i) { return i.runStart; });
 		var data = {
 			text: serialize(),
-			saved: saved,
+			saved: !S.dirty,
+			rev: S.rev,
 			run: idx > -1 ? { idx: idx, title: S.items[idx].title, runStart: S.items[idx].runStart, acc: S.items[idx].acc } : null,
 			brk: S.brk ? { until: S.brk.until, next: S.brk.next } : null
 		};
-		try { localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); } catch (e) { /* privater Modus */ }
+		try { localStorage.setItem(localKey(), JSON.stringify(data)); } catch (e) { /* privater Modus */ }
 	}
 
 	function setStatus(text, warn) {
@@ -141,24 +173,84 @@
 	}
 
 	function scheduleSave() {
-		persistLocal(false);
+		S.dirty = true;
+		persistLocal();
 		clearTimeout(saveTimer);
 		saveTimer = setTimeout(saveNow, 600);
 	}
 
+	/*
+	 * Speichert den aktuellen Stand. Es läuft immer nur eine Speicherung; was währenddessen
+	 * geändert wird, geht gleich danach hinterher – so überholt nie ein älterer Stand einen
+	 * neueren. Mitgeschickt wird die Revision, auf der der Stand beruht.
+	 */
 	function saveNow(keepalive) {
 		clearTimeout(saveTimer);
+		S.dirty = true;
+		if (saving && !keepalive) {
+			saveAgain = true;
+			return Promise.resolve();
+		}
+		var text = serialize();
+		var date = S.date;
+		saving = true;
 		lastSave = Date.now();
 		setStatus('Speichert …');
-		return api('day', { method: 'POST', keepalive: keepalive, body: { date: S.date, content: serialize() } })
-			.then(function () {
-				persistLocal(true);
+		return api('day', { method: 'POST', keepalive: keepalive, body: { date: date, content: text, base: S.rev } })
+			.then(function (r) {
+				if (date !== S.date) { return; }
+				S.rev = r.rev;
+				clearTimeout(retryTimer);
+				retryTimer = null;
+				if (serialize() === text) { S.dirty = false; }
+				persistLocal();
 				setStatus('Gespeichert um ' + hm(Date.now()));
 			})
-			.catch(function () {
-				persistLocal(false);
-				setStatus('Nicht gespeichert – lokal gesichert, neuer Versuch folgt', true);
+			.catch(function (err) {
+				if (date !== S.date) { return; }
+				if (err && err.status === 409 && err.data && err.data.data && err.data.data.current) {
+					adopt(err.data.data.current, 'Auf einem anderen Gerät geändert – neuer Stand geladen. Deine letzte Änderung bitte noch einmal machen.');
+					return;
+				}
+				persistLocal();
+				setStatus('Nicht gespeichert – lokal gesichert, neuer Versuch in 30 Sekunden', true);
+				if (!retryTimer) {
+					retryTimer = setTimeout(function () { retryTimer = null; if (S.dirty) { saveNow(); } }, 30000);
+				}
+			})
+			.then(function () {
+				saving = false;
+				if (saveAgain) {
+					saveAgain = false;
+					saveNow();
+				}
 			});
+	}
+
+	/*
+	 * Übernimmt den Stand des Servers (anderes Gerät). Ein hier laufender Timer läuft
+	 * beim gleichen, noch offenen To-do weiter.
+	 */
+	function adopt(day, notice) {
+		var running = S.items.find(function (i) { return i.runStart; });
+		S.items = parse(day.content);
+		S.rev = day.rev || 0;
+		S.dirty = false;
+		S.brk = null;
+		if (running) {
+			var same = S.items.find(function (i) { return !i.done && i.title === running.title; });
+			if (same) {
+				same.acc = Math.max(same.acc, running.acc);
+				same.runStart = running.runStart;
+				same.start = same.start || running.start;
+				same.quote = running.quote;
+				S.dirty = true;
+			}
+		}
+		S.notice = notice || '';
+		persistLocal();
+		if (!S.editing) { render(); }
+		if (S.dirty) { scheduleSave(); }
 	}
 
 	/* ---------- Coach & Party ---------- */
@@ -262,12 +354,20 @@
 		var next = -1;
 		for (var k = i + 1; k < S.items.length; k++) { if (!S.items[k].done) { next = k; break; } }
 		if (next < 0) { next = S.items.findIndex(function (x) { return !x.done; }); }
-		S.brk = (next > -1 && S.pause > 0) ? { until: now + S.pause * 60000, next: next, over: false } : null;
+		// Läuft gerade ein anderes To-do, gibt es keine Pause.
+		var other = S.items.some(function (x) { return x.runStart; });
+		S.brk = (next > -1 && S.pause > 0 && !other) ? { until: now + S.pause * 60000, next: next, over: false } : null;
 
 		render();
 		showParty(it);
 		saveNow();
-		persistLocal(false);
+		persistLocal();
+	}
+
+	// Das erste offene To-do ab Stelle i (sonst von vorne), -1 wenn alles erledigt ist.
+	function nextOpen(i) {
+		for (var k = i; k < S.items.length; k++) { if (!S.items[k].done) { return k; } }
+		return S.items.findIndex(function (x) { return !x.done; });
 	}
 
 	function reopen(i) {
@@ -298,7 +398,7 @@
 	}
 
 	function loadYesterday() {
-		var d = new Date();
+		var d = new Date(S.date + 'T12:00:00');
 		d.setDate(d.getDate() - 1);
 		var hint = root.querySelector('[data-yesterday-hint]');
 		api('day', { params: { date: dateKey(d) } }).then(function (r) {
@@ -369,7 +469,7 @@
 		if (it.done) { meta = it.start + ' – ' + it.end; }
 		else if (running) { meta = 'läuft · gestartet ' + it.start; }
 		else if (paused) { meta = 'pausiert · antippen zum Fortsetzen'; }
-		var time = (running || paused) ? clock(t) : (it.done ? dur(t) : '');
+		var time = (running || paused) ? clock(t) : (it.done ? dur(t).slice(0, 5) : ''); // Liste kurz (hh:mm), der Text mit Sekunden
 		var icon = it.done ? ICON.check : (running ? ICON.pause : ICON.play);
 
 		var side = it.done
@@ -483,7 +583,7 @@
 
 	function render(focusSel) {
 		if (!S.loaded) { return; }
-		var dateLabel = new Date().toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' });
+		var dateLabel = new Date(S.date + 'T12:00:00').toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' });
 		root.innerHTML =
 			'<header class="fl-head"><div>' +
 			'<div class="fl-kicker">Fokus-Log · ' + esc(dateLabel) + '</div>' +
@@ -494,6 +594,7 @@
 			'<button type="button" data-action="tab" data-tab="verlauf" aria-pressed="' + (S.tab === 'verlauf') + '">Verlauf</button>' +
 			'</nav></header>' +
 			(S.loadError ? '<p class="fl-error">Der Server war nicht erreichbar – du arbeitest mit der lokalen Kopie.</p>' : '') +
+			(S.notice ? '<p class="fl-error">' + esc(S.notice) + '</p>' : '') +
 			(S.tab === 'heute' ? renderToday() : renderHistory());
 
 		if (focusSel) {
@@ -509,12 +610,13 @@
 		if (!btn || !root.contains(btn)) { return; }
 		var a = btn.getAttribute('data-action');
 		var i = parseInt(btn.getAttribute('data-idx'), 10);
+		S.notice = '';
 
 		switch (a) {
 			case 'toggle': toggle(i); refocus('toggle', i); break;
 			case 'check': check(i); refocus('reopen', i); break;
 			case 'reopen': reopen(i); refocus('check', i); break;
-			case 'start-next': if (S.brk) { var n = S.brk.next; toggle(n); refocus('toggle', n); } break;
+			case 'start-next': if (S.brk) { var n = nextOpen(S.brk.next); if (n > -1) { toggle(n); refocus('toggle', n); } else { S.brk = null; render(); } } break;
 			case 'edit': S.planText = serialize(); S.editing = true; render('#fl-plan'); break;
 			case 'cancel-edit': S.editing = false; render(); break;
 			case 'apply': applyPlan(); break;
@@ -554,8 +656,9 @@
 	});
 
 	window.addEventListener('pagehide', function () {
-		if (S.loaded && S.items.length) {
-			persistLocal(false);
+		// Nur speichern, wenn der Server etwas noch nicht hat.
+		if (S.loaded && S.dirty) {
+			persistLocal();
 			saveNow(true);
 		}
 	});
@@ -565,6 +668,14 @@
 	setInterval(function () {
 		if (!S.loaded) { return; }
 		var runIdx = S.items.findIndex(function (i) { return i.runStart; });
+
+		// Neuer Tag: wechseln, sobald nichts läuft und alles gespeichert ist. Ein Timer, der
+		// über Mitternacht läuft, bleibt beim Tag, an dem er begonnen hat.
+		var todayKey = dateKey(new Date());
+		if (todayKey !== S.date && runIdx < 0 && !S.dirty && !saving && !S.editing) {
+			switchDay(todayKey);
+			return;
+		}
 
 		if (runIdx > -1) {
 			var it = S.items[runIdx];
@@ -609,20 +720,76 @@
 		}
 	}
 
-	api('day', { params: { date: S.date } })
-		.then(function (r) { return r.content || ''; })
-		.catch(function () { S.loadError = true; return ''; })
-		.then(function (content) {
-			var local = readLocal();
-			if (local && local.text && (local.saved === false || !content)) {
-				content = local.text;
+	/*
+	 * Lädt den Tag. Die lokale Kopie gewinnt nur, wenn sie Ungespeichertes enthält und der
+	 * Server seither nicht von einem anderen Gerät geändert wurde (gleiche Revision), oder
+	 * wenn der Server nicht erreichbar ist.
+	 */
+	function loadDay() {
+		S.loaded = false;
+		S.loadError = false;
+		return api('day', { params: { date: S.date } })
+			.catch(function () { S.loadError = true; return null; })
+			.then(function (r) {
+				var local = readLocal();
+				var content = r ? (r.content || '') : '';
+				var rev = r ? (r.rev || 0) : 0;
+				var useLocal = !!(local && local.text) && (
+					!r ||
+					(local.saved === false && (local.rev === rev || !r.exists))
+				);
+				if (useLocal) {
+					content = local.text;
+					rev = typeof local.rev === 'number' ? local.rev : rev;
+				}
+				S.items = parse(content);
+				S.rev = rev;
+				S.dirty = useLocal && local.saved === false;
+				restoreLocal(local);
+				cleanLocal();
+				S.planText = content;
+				S.editing = S.items.length === 0;
+				S.loaded = true;
+				render();
+				if (S.dirty && !S.loadError) { saveNow(); }
+			});
+	}
+
+	// Lokale Kopien älter als 14 Tage entfernen.
+	function cleanLocal() {
+		try {
+			var prefix = 'fokuslog:' + cfg.userId + ':';
+			var limit = new Date(S.date + 'T12:00:00');
+			limit.setDate(limit.getDate() - 14);
+			var oldest = dateKey(limit);
+			for (var k = localStorage.length - 1; k >= 0; k--) {
+				var key = localStorage.key(k);
+				if (key && key.indexOf(prefix) === 0 && key.slice(prefix.length) < oldest) { localStorage.removeItem(key); }
 			}
-			S.items = parse(content);
-			restoreLocal(local);
-			S.planText = content;
-			S.editing = S.items.length === 0;
-			S.loaded = true;
-			render();
-			if (local && local.saved === false && !S.loadError) { saveNow(); }
-		});
+		} catch (e) { /* privater Modus */ }
+	}
+
+	function switchDay(key) {
+		S.date = key;
+		S.items = [];
+		S.brk = null;
+		S.rev = 0;
+		S.dirty = false;
+		S.notice = '';
+		S.history = null;
+		loadDay();
+	}
+
+	// Zurück in der App (anderer Tab, Handy entsperrt): neuen Stand eines anderen Geräts holen.
+	document.addEventListener('visibilitychange', function () {
+		if (document.visibilityState !== 'visible' || !S.loaded || S.dirty || saving || S.editing) { return; }
+		var date = S.date;
+		api('day', { params: { date: date } }).then(function (r) {
+			if (date === S.date && !S.dirty && !S.editing && (r.rev || 0) !== S.rev) {
+				adopt(r, '');
+			}
+		}).catch(function () {});
+	});
+
+	loadDay();
 })();

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Fokus-Log
  * Description:       Tagesplan als einfache Textliste („- To-do“), Timer pro To-do, feste Pausen zwischen den Aufgaben, motivierender Coach und Leistungsverlauf. Shortcode: [fokus_log]
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            David
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FOKUS_LOG_VERSION', '1.0.0' );
+define( 'FOKUS_LOG_VERSION', '1.0.1' );
 define( 'FOKUS_LOG_FILE', __FILE__ );
 define( 'FOKUS_LOG_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FOKUS_LOG_URL', plugin_dir_url( __FILE__ ) );

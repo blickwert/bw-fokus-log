@@ -11,21 +11,25 @@ Ein einfacher Tagesplaner gegen Aufschieben: Du schreibst den Plan als Textliste
 - **Coach**: Unter dem laufenden To-do steht bei jedem Start ein neuer Spruch. Beim Abhaken kommt eine Party-Einblendung mit Konfetti.
 - **Speicherformat** wie eine Textdatei, automatisch gespeichert (zum Kopieren oder als `.txt` herunterladen):
   ```
-  - Spazieren gehen {08:30|09:05|00:35}
-  - Bett machen {09:10|09:16|00:06}
-  - Briefe öffnen {09:20||00:04}
+  - Spazieren gehen {08:30|09:05|00:35:12}
+  - Bett machen {09:10|09:16|00:06:40}
+  - Briefe öffnen {09:20||00:04:05}
   - Staubsaugen
   ```
-  `{start|ende|dauer}`: Die Dauer ist die reine Timerzeit (hh:mm), ohne Pausen. Ist die Endzeit leer, wurde das To-do angefangen, aber noch nicht abgeschlossen.
+  `{start|ende|dauer}`: Die Dauer ist die reine Timerzeit (hh:mm:ss, ältere Einträge mit hh:mm werden weiter gelesen), ohne Pausen, höchstens 24 Stunden je To-do. Ist die Endzeit leer, wurde das To-do angefangen, aber noch nicht abgeschlossen.
 - **Offene von gestern holen**: übernimmt alles, was gestern offen geblieben ist, in den neuen Plan.
 - **Verlauf**: erledigte To-dos und Fokuszeit der letzten 14 Tage, mit Vergleich zur Vorwoche.
 - Der Tab-Titel zeigt den laufenden Timer bzw. die Pause, so siehst du ihn auch in einem anderen Tab.
 - Jeder angemeldete Benutzer sieht nur seine eigenen Daten.
+- Mehrere Geräte (z. B. Handy neben dem Schreibtisch und Computer): Jede Speicherung hat eine Revision. Hat ein anderes Gerät inzwischen gespeichert, wird nichts überschrieben, die App lädt den neuen Stand. Kommst du in die App zurück, holt sie den Stand der anderen Geräte.
+- Der Text wird so gespeichert, wie du ihn schreibst (auch `<`, `&`, Anführungszeichen, `%`).
+- Ist der Server kurz nicht erreichbar, sichert die App lokal und versucht es alle 30 Sekunden wieder. Ist die Anmeldung abgelaufen (App lange offen), holt sie sich selbst einen neuen Schlüssel.
+- Um Mitternacht wechselt die App auf den neuen Tag, sobald kein Timer mehr läuft.
 
 ## Installation
 
 **Variante A – ZIP (am einfachsten)**
-1. `fokus-log-1.0.0.zip` herunterladen.
+1. `fokus-log-1.0.1.zip` herunterladen.
 2. WordPress-Backend → *Plugins → Installieren → Plugin hochladen* → ZIP auswählen → *Jetzt installieren* → *Aktivieren*.
 
 **Variante B – aus dem Repo**
